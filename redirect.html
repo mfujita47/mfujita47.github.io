@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script>
+        window.onload = function() {
+            // URLパラメータ ?cmd=xxx を取得
+            const params = new URLSearchParams(window.location.search);
+            const cmd = params.get('cmd');
+
+            if (cmd) {
+                // カスタムプロトコルへリダイレクト
+                window.location.href = 'gtask://' + cmd;
+
+                // 処理後にタブを閉じるメッセージ（ブラウザの制限で自動で閉じない場合があるため）
+                document.body.innerHTML = 'Command sent. Please close this tab.';
+
+                // 可能であればウィンドウを閉じる
+                setTimeout(function(){ window.close(); }, 100);
+            } else {
+                document.body.innerHTML = 'Error: Command (cmd) is not specified.';
+            }
+        };
+    </script>
+</head>
+<body>
+    <p>Launching local script...</p>
+</body>
+</html>
