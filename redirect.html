@@ -8,8 +8,9 @@
             // URLパラメータ ?cmd=xxx を取得
             const params = new URLSearchParams(window.location.search);
             const cmd = params.get('cmd');
+            const setup = params.get('setup');
 
-            if (cmd) {
+            if (cmd && !setup) {
                 // カスタムプロトコルへリダイレクト
                 window.location.href = 'gtask://' + cmd;
 
@@ -19,7 +20,9 @@
                 // 可能であればウィンドウを閉じる
                 setTimeout(function(){ window.close(); }, 100);
             } else {
-                document.body.innerHTML = 'Error: Command (cmd) is not specified.';
+                const target = 'gtask://' + (cmd || 'noop');
+                window.location.href = target;
+                document.body.innerHTML = '<p>初回許可モード（このタブは自動で閉じません）。</p><p>上部のポップアップで「常に許可」にチェックを入れて開いてください。<br>表示されない場合は <a id="allow-link" href="' + target + '">こちらをクリック</a> してください。</p>';
             }
         };
     </script>
