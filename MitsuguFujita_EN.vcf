@@ -1,0 +1,26 @@
+BEGIN:VCARD
+VERSION:3.0
+PROFILE:VCARD
+KIND:individual
+FN:Mitsugu Fujita
+N:Fujita;Mitsugu;;;
+GENDER:M
+X-PHONETIC-FIRST-NAME;CHARSET=UTF-8;X-IRMC-N:ミツグ
+X-PHONETIC-LAST-NAME;CHARSET=UTF-8;X-IRMC-N:フジタ
+EMAIL;TYPE=INTERNET;TYPE=HOME:mfujita47@gmail.com
+EMAIL;TYPE=INTERNET;TYPE=WORK:mfujita47@med.kindai.ac.jp
+TEL;TYPE=WORK:+81-72-288-7222
+TEL;TYPE=CELL:+81-70-8459-1616
+ADR;TYPE=WORK:1-14-1;Miharadai;Minami;Sakai;Osaka;590-0197;JP
+ADR;TYPE=HOME:2-3-11-107;Miharadai;Minami;Sakai;Osaka;590-0111;JP
+ORG:Kindai University Faculty of Medicine;Center for Medical Education and Clinical Training
+TITLE:Associate Professor
+BDAY:19720724
+URL:https://researchmap.jp/mfujita47/
+ROLE:Neurosurgeon, Neuro-Oncologist, and Cancer Immunologist
+LANG:ja-JP;en-US
+LOGO;JPEG:https://www.kindai.ac.jp/img/about-kindai/overview/symbol/img_01-1.jpg
+PHOTO;JPEG:https://www.kindai.ac.jp/img/medicine/campus-life/healthcare/about/img_mitsugu_fujita.jpg
+TZ:+0900
+NOTE:https://wa.me/qr/RMERO2244KZ5N1\n(WhatsApp ID)
+END:VCARD

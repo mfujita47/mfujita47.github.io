@@ -1,0 +1,26 @@
+BEGIN:VCARD
+VERSION:3.0
+PROFILE:VCARD
+KIND:individual
+FN:藤田 貢
+N:藤田;貢;;;
+GENDER:M
+X-PHONETIC-FIRST-NAME;CHARSET=UTF-8;X-IRMC-N:ミツグ
+X-PHONETIC-LAST-NAME;CHARSET=UTF-8;X-IRMC-N:フジタ
+EMAIL;TYPE=INTERNET;TYPE=HOME:mfujita47@gmail.com
+EMAIL;TYPE=INTERNET;TYPE=WORK:mfujita47@med.kindai.ac.jp
+TEL;TYPE=WORK:072-288-7222
+TEL;TYPE=CELL:070-8459-1616
+ADR;TYPE=WORK:1-14-1;三原台;南区;堺市;大阪府;590-0197;JP
+ADR;TYPE=HOME:2-3-11-107;三原台;南区;堺市;大阪府;590-0111;JP
+ORG:近畿大学医学部;教育センター
+TITLE:准教授
+BDAY:19720724
+URL:https://researchmap.jp/mfujita47/
+ROLE:脳腫瘍外科医、脳腫瘍免疫学研究者
+LANG:ja-JP;en-US
+LOGO;JPEG:https://www.kindai.ac.jp/img/about-kindai/overview/symbol/img_01-1.jpg
+PHOTO;JPEG:https://www.kindai.ac.jp/img/medicine/campus-life/healthcare/about/img_mitsugu_fujita.jpg
+TZ:+0900
+NOTE:https://line.me/ti/p/wzfUl_j1BR\n(Line ID)
+END:VCARD
