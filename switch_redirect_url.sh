@@ -17,11 +17,26 @@ elif [[ "$MODE" == "cloudfree" || "$MODE" == "rollback" ]]; then
   FROM_HOST="mfujita47.github.io"
   TO_HOST="mfujita47.cloudfree.jp"
 elif [[ "$MODE" == "status" ]]; then
-  echo "=== Google Tasks (redirect.html?cmd=) ==="
-  gog --readonly --account "$ACCOUNT" tasks list @default --show-completed=false --all --max 100 --json --no-input \
-    | jq -r '.tasks[] | select((.notes // "") | contains("/redirect.html?cmd=")) | "  \(.id) | \(.title) -> \(.notes)"'
-  echo "=== TODOS.md (redirect.html?cmd=) ==="
-  grep -n "redirect.html?cmd=" "$TODOS_PATH" | sed 's/^/  /' || true
+  python3 - "$ACCOUNT" "$TODOS_PATH" << 'PY'
+import json, pathlib, subprocess, sys
+
+account, todos_path = sys.argv[1], pathlib.Path(sys.argv[2])
+out = subprocess.check_output(
+    ["gog", "--readonly", "--account", account, "tasks", "list", "@default",
+     "--all", "--max", "100", "--show-completed", "--show-hidden", "--json", "--no-input"],
+    text=True,
+)
+tasks = json.loads(out).get("tasks", [])
+gh = [t for t in tasks if "mfujita47.github.io/redirect.html?cmd=" in (t.get("notes") or "")]
+cf = [t for t in tasks if "mfujita47.cloudfree.jp/redirect.html?cmd=" in (t.get("notes") or "")]
+print(f"=== Google Tasks (redirect.html?cmd=) ===")
+print(f"  github.io    : {len(gh)} tasks (needsAction: {sum(1 for t in gh if t.get('status')=='needsAction')}, completed: {sum(1 for t in gh if t.get('status')=='completed')})")
+print(f"  cloudfree.jp : {len(cf)} tasks (needsAction: {sum(1 for t in cf if t.get('status')=='needsAction')}, completed: {sum(1 for t in cf if t.get('status')=='completed')})")
+print(f"=== TODOS.md (redirect.html?cmd=) ===")
+for idx, line in enumerate(todos_path.read_text(encoding="utf-8").splitlines(), 1):
+    if "redirect.html?cmd=" in line:
+        print(f"  {idx}:{line}")
+PY
   exit 0
 else
   echo "Usage: $0 {github|cloudfree|rollback|status}" >&2
@@ -30,20 +45,39 @@ fi
 
 echo "Switching redirect URLs: ${FROM_HOST} -> ${TO_HOST}"
 
-mapfile -t TASKS < <(
-  gog --readonly --account "$ACCOUNT" tasks list @default --show-completed=false --all --max 100 --json --no-input \
-    | jq -c ".tasks[] | select((.notes // \"\") | contains(\"${FROM_HOST}/redirect.html?cmd=\")) | {id, title, notes}"
-)
+python3 - "$ACCOUNT" "$FROM_HOST" "$TO_HOST" << 'PY'
+import concurrent.futures, json, subprocess, sys
 
-for item in "${TASKS[@]}"; do
-  [[ -z "$item" ]] && continue
-  id=$(echo "$item" | jq -r '.id')
-  title=$(echo "$item" | jq -r '.title')
-  old_notes=$(echo "$item" | jq -r '.notes')
-  new_notes="${old_notes//${FROM_HOST}\/redirect.html?cmd=/${TO_HOST}/redirect.html?cmd=}"
-  gog --account "$ACCOUNT" tasks update @default "$id" --notes "$new_notes" --json --no-input >/dev/null
-  echo "  Updated Google Task: $title ($id)"
-done
+account, from_host, to_host = sys.argv[1], sys.argv[2], sys.argv[3]
+old_sub = f"{from_host}/redirect.html?cmd="
+new_sub = f"{to_host}/redirect.html?cmd="
+
+out = subprocess.check_output(
+    ["gog", "--readonly", "--account", account, "tasks", "list", "@default",
+     "--all", "--max", "100", "--show-completed", "--show-hidden", "--json", "--no-input"],
+    text=True,
+)
+tasks = json.loads(out).get("tasks", [])
+targets = [t for t in tasks if old_sub in (t.get("notes") or "")]
+print(f"  Found {len(targets)} Google Tasks to update...")
+
+def update_one(t):
+    tid = t["id"]
+    title = t.get("title", "")
+    status = t.get("status", "")
+    new_notes = (t.get("notes") or "").replace(old_sub, new_sub)
+    subprocess.run(
+        ["gog", "--account", account, "tasks", "update", "@default", tid,
+         "--notes", new_notes, "--json", "--no-input"],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
+    return f"  Updated [{status}] {title} ({tid})"
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+    for msg in ex.map(update_one, targets):
+        print(msg)
+PY
 
 if [[ -f "$TODOS_PATH" ]] && grep -q "${FROM_HOST}/redirect.html?cmd=" "$TODOS_PATH"; then
   python3 - "$TODOS_PATH" "$FROM_HOST" "$TO_HOST" << 'PY'
